@@ -25,9 +25,30 @@ body = json.loads('''{
     }''')
 token = '1401583441:AAEPwUV3RzQMAtGBsu_0gkju09Nl04YxKkk'
 baseUrl = 'https://www.betsul.com/web/v2/eventos'
+gameUrl = 'https://widgets.fn.sportradar.com/betwaywidget/pt/Etc:UTC/gismo/match_detailsextended/'
 bot_url = f'https://api.telegram.org/bot{token}/getUpdates'
 
-allEvents = requests.post(url=baseUrl, json=body)
+events = requests.post(url=baseUrl, json=body).json()['eventos']
 
-for item in allEvents:
-    print(item)
+for count, event in enumerate(events):
+    indexID = int(str(event).index('matchID'))
+    matchID = str(event)[indexID + 10:indexID + 18]
+
+    response = requests.get(url=gameUrl+matchID).json()
+    data = response['doc'][0]['data']
+
+    home = data['teams']['home']
+    away = data['teams']['away']
+    league = event['nomeCampeonato']
+    country = event['nomePais']
+
+    homeGoals = []
+    homeAttacks = []
+    homeKicks = []
+    homeCorners = []
+
+    awayGoals = []
+    time = event['tempoDecorridoMin']
+
+    collection = [home, away, time, league, country]
+    print(collection)
