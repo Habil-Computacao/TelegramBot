@@ -1,4 +1,4 @@
 from src.betsulApi import BetsulApi
 
-api = BetsulApi()
-api.run()
+betApi = BetsulApi()
+betApi.run()
