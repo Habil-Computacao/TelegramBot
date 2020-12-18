@@ -70,9 +70,15 @@ class BetsulApi:
         _events = self.requestEvents()
         [_eventsData, _gamesData, _matchIds] = self.getGameData(_events)
         result = []
+
         for event, game, matchId in zip(_eventsData, _gamesData, _matchIds):
             _temp = self.getEventValues(event)
             _temp.update(self.getGameValues(game))
-            _temp.update({'id': matchId})
+            team = _temp['teams']['home'].replace(' ', '%2520')
+            matchLink = self.matchLink + team
+
+            _temp.update({'id': matchId, 'matchLink': matchLink})
+
             result.append(_temp)
+
         return result

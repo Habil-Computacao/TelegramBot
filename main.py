@@ -3,19 +3,6 @@ import requests
 from src.betsulApi import BetsulApi
 from src.oddCalculator import OddCalculator
 
-betApi = BetsulApi()
-oddCalculator = OddCalculator()
-
-fakedata = [{'score': '1:0', 'time': '35', 'league-country': ['Primeira A - Abertura', 'Colômbia'],
-             'odds': [170, 305, 540], 'teams': {'home': 'Millonarios', 'away': 'Once Caldas'},
-             'stats': {'goalAttempts': {'home': 0, 'away': 5}, 'shotsOff': {'home': 0, 'away': 5},
-                       'dangerousAttacks': {'home': 1, 'away': 70}, 'corners': {'home': 1, 'away': 15}},
-             'id': '24847098'}]
-
-while True:
-    print(oddCalculator.run(fakedata))
-    time.sleep(60)
-
 
 class TipsterBot:
     def __init__(self):
@@ -28,20 +15,37 @@ class TipsterBot:
         self.hand = u'\U0001F449'
         self.alert = u'\U000026A0'
         self.earth = u'\U0001F30F'
+        self.betApi = BetsulApi()
+        self.oddCalculator = OddCalculator()
 
     def start(self):
-        update_id = None
-        betApi = BetsulApi()
-        gameList = betApi.run()
+        fakedata = [{'score': '1:0', 'time': '35', 'league-country': ['Primeira A - Abertura', 'Colômbia'],
+                     'odds': [170, 305, 540], 'teams': {'home': 'Millonarios', 'away': 'Once Caldas'},
+                     'stats': {'goalAttempts': {'home': 0, 'away': 5}, 'shotsOff': {'home': 0, 'away': 5},
+                               'dangerousAttacks': {'home': 1, 'away': 70}, 'corners': {'home': 1, 'away': 15}},
+                     'id': '24847098'}]
 
         while True:
-            message = self.createMessage()
-            self.sendMessage(message, self.groupId)
-            time.sleep(10)
+            gameList = self.oddCalculator.run(fakedata)
+            print(gameList)
 
-    def createMessage(self):
-        message = f"""{self.soccerEmoji} Tipster Bot {self.soccerEmoji}\n\n{self.pinEmoji} \
-                    \n\n{self.hand}\n{self.hand}\n{self.hand}\n\n{self.alert}\n\n{self.earth} """
+            for gameDict in gameList:
+                for game in gameDict:
+                    message = self.createMessage(gameDict[game])
+                    self.sendMessage(message, self.groupId)
+
+            time.sleep(30)
+
+    def createMessage(self, game):
+        home = game['teams']['home']
+        away = game['teams']['away']
+        odd = game['odd']
+        score = game['score']
+        appm = game['appm']
+
+        message = f"""{self.soccerEmoji} Tipster Bot {self.soccerEmoji}\n\n{self.pinEmoji} {home} VS {away}\
+                    \n\n{self.hand} Odd atual: {odd}\n{self.hand} Pontuação: {score}\n{self.hand} APPM: {appm}\
+                    \n\n{self.alert}\n\n{self.earth}: """
         return message
 
     def sendMessage(self, resposta, chat_id):
@@ -49,5 +53,5 @@ class TipsterBot:
         requests.get(chatLink)
 
 
-bot = TipsterBot()
-bot.start()
+tipsterBot = TipsterBot()
+tipsterBot.start()

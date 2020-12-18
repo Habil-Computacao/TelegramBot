@@ -23,12 +23,14 @@ class OddCalculator:
 
     def run(self, data: List[Dict[str, int or str or dict or list]]) -> List[Dict[int, dict]]:
         response = []
+
         for match in data:
             _matchTime = int(match['time'])
             _matchId = match['id']
             _matchStats = match['stats']
             _verification = 0
-            if self.matchTime1 - self.matchTimeOffset < _matchTime < self.matchTime1 + self.matchTimeOffset or self.matchTime2 - self.matchTimeOffset < _matchTime < self.matchTime2 + self.matchTimeOffset:
+            if self.matchTime1 - self.matchTimeOffset < _matchTime < self.matchTime1 + self.matchTimeOffset \
+                    or self.matchTime2 - self.matchTimeOffset < _matchTime < self.matchTime2 + self.matchTimeOffset:
                 if self.matchs.get(_matchId):
                     if self.matchs[_matchId] or _matchTime < 45:
                         continue
@@ -93,6 +95,9 @@ class OddCalculator:
             _constCorners = self.constCorners2
 
         currentAPPM = self.calcAPPM(dangerousAttacks, matchTime)
-        if self.calcAPPM(dangerousAttacks, matchTime) > _constAPPM and self.calcCG(goalAttempts, shotsOff, corners) > _constCG and corners > _constCorners and corners > shotsOff:
+        if self.calcAPPM(dangerousAttacks, matchTime) > _constAPPM and \
+                self.calcCG(goalAttempts, shotsOff, corners) > _constCG and \
+                corners > _constCorners and corners > shotsOff:
+
             _passed = True
         return {'odd': self.calcOdd(odds, score), 'score': score, 'appm': currentAPPM} if _passed else 0
