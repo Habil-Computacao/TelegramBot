@@ -13,24 +13,26 @@ class BetsulApi:
     def requestEvents(self) -> list:
         return requests.post(url=self.baseUrl, json=self.body).json()['eventos']
 
-    def getGameData(self, events) -> Tuple[list, list]:
+    def getGameData(self, events) -> Tuple[list, list, list]:
         allEvents = []
         allGames = []
+        allMatchIds = []
         for event in events:
             if event['periodo'] == 'Não Iniciado':
-                break
+                continue
 
             _indexID = int(str(event).index('matchID'))
             _matchID = str(event)[_indexID + 10:_indexID + 18]
-            gameData = requests.get(url=self.gameUrl + _matchID).json()['doc'][0]['data']
+            _gameData = requests.get(url=self.gameUrl + _matchID).json()['doc'][0]['data']
 
-            allGames.append(gameData)
+            allGames.append(_gameData)
             allEvents.append(event)
+            allMatchIds.append(_matchID)
 
-        return allEvents, allGames
+        return allEvents, allGames, allMatchIds
 
     @staticmethod
-    def verifyGameValue(gameData, valueName) -> Dict[str, int]:
+    def verifyGameValue(gameData, valueName) -> Dict[str, int or str]:
         return gameData['values'][valueName]['value'] if gameData['values'].get(valueName) else {'home': 0, 'away': 0}
 
     def getGameValues(self, gameData) -> dict:
@@ -66,12 +68,11 @@ class BetsulApi:
 
     def run(self) -> list:
         _events = self.requestEvents()
-        [_eventsData, _gamesData] = self.getGameData(_events)
+        [_eventsData, _gamesData, _matchIds] = self.getGameData(_events)
         result = []
-        for event, game in zip(_eventsData, _gamesData):
+        for event, game, matchId in zip(_eventsData, _gamesData, _matchIds):
             _temp = self.getEventValues(event)
             _temp.update(self.getGameValues(game))
+            _temp.update({'id': matchId})
             result.append(_temp)
-
-        print(result)
         return result
