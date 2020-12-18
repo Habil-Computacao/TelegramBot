@@ -41,31 +41,18 @@ class BetsulApi:
         away = gameData['teams']['away']
         corners = self.verifyGameValue(gameData, '124')
         dangerousAttacks = self.verifyGameValue(gameData, '1029')
-        goalAttempts = self.verifyGameValue(gameData, 'goalattempts')
-
-        _attempts = self.verifyGameValue(gameData, '126')
-        _blocks = self.verifyGameValue(gameData, '171')
-
-        shotsOff = {'home': _attempts['home'] + _blocks['home'], 'away': _attempts['away'] + _blocks['away']}
+        ballPossession = self.verifyGameValue(gameData, '110')
 
         return {'teams': {'home': home, 'away': away},
-                'stats': {'goalAttempts': goalAttempts, 'shotsOff': shotsOff, 'dangerousAttacks': dangerousAttacks,
-                          'corners': corners}}
+                'stats': {'dangerousAttacks': dangerousAttacks,
+                          'corners': corners, 'ballPossession': ballPossession}}
 
     @staticmethod
     def getEventValues(eventData) -> dict:
         score = eventData['placar']
         matchTime = eventData['tempoDecorridoMin']
-        league = eventData['nomeCampeonato']
-        country = eventData['nomePais']
 
-        _odds = eventData['subeventos']
-        oddHome = _odds[0]['cotacao']
-        oddDraw = _odds[1]['cotacao']
-        oddAway = _odds[2]['cotacao']
-
-        return {'score': score, 'time': matchTime, 'league-country': [league, country],
-                'odds': [oddHome, oddDraw, oddAway]}
+        return {'score': score, 'time': matchTime}
 
     def run(self) -> list:
         _events = self.requestEvents()
@@ -75,11 +62,11 @@ class BetsulApi:
         for event, game, matchId in zip(_eventsData, _gamesData, _matchIds):
             _temp = self.getEventValues(event)
             _temp.update(self.getGameValues(game))
+
             home = _temp['teams']['home'].replace(' ', '%2520')
             away = _temp['teams']['away'].replace(' ', '%2520')
             matchLink = self.matchLink + home + away
             _temp.update({'id': matchId, 'matchLink': matchLink})
 
             result.append(_temp)
-
         return result
