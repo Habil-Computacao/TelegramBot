@@ -12,6 +12,10 @@ fakedata = [{'score': '1:0', 'time': '35', 'league-country': ['Primeira A - Aber
                        'dangerousAttacks': {'home': 1, 'away': 70}, 'corners': {'home': 1, 'away': 15}},
              'id': '24847098'}]
 
+while True:
+    print(oddCalculator.run(fakedata))
+    time.sleep(60)
+
 
 class TipsterBot:
     def __init__(self):
@@ -47,7 +51,3 @@ class TipsterBot:
 
 bot = TipsterBot()
 bot.start()
-
-while True:
-    print(oddCalculator.run(fakedata))
-    time.sleep(60)
