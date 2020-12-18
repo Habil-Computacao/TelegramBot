@@ -8,6 +8,7 @@ class BetsulApi:
         self.body = json.loads('''{"filters": {"pais": null,"tipoEsporte": 1,"torneio": null},"limit": 500,"offset": 0,
         "sort": ["date-asc"],"type": "aovivo"}''')
         self.baseUrl = 'https://www.betsul.com/web/v2/eventos'
+        self.matchLink = 'https://www.bet365.com/%23/AX/K%5E'
         self.gameUrl = 'https://lmt.fn.sportradar.com/demolmt/en/Etc:UTC/gismo/match_detailsextended/'
 
     def requestEvents(self) -> list:
@@ -74,9 +75,9 @@ class BetsulApi:
         for event, game, matchId in zip(_eventsData, _gamesData, _matchIds):
             _temp = self.getEventValues(event)
             _temp.update(self.getGameValues(game))
-            team = _temp['teams']['home'].replace(' ', '%2520')
-            matchLink = self.matchLink + team
-
+            home = _temp['teams']['home'].replace(' ', '%2520')
+            away = _temp['teams']['away'].replace(' ', '%2520')
+            matchLink = self.matchLink + home + away
             _temp.update({'id': matchId, 'matchLink': matchLink})
 
             result.append(_temp)
