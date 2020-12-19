@@ -1,4 +1,4 @@
-from typing import List, Dict, Union, Set
+from typing import List, Dict, Union, Set, Tuple
 
 
 class OddCalculator:
@@ -61,19 +61,25 @@ class OddCalculator:
         return stat[teamSide]
 
     @staticmethod
-    def getLoser(score: str) -> str:
+    def getLoser(score: str) -> Tuple[str, List[int]]:
         [home, away] = score.split(':')
         home = int(home)
         away = int(away)
-        return 'away' if away < home else 'home'
+        team = 'away' if away < home else 'home' if away > home else 'draw'
+        return team, [home, away]
 
     def oddVerification(self, dangerousAttacks: Dict[str, int], matchTime: int, corners: Dict[str, int],
                         score: str) -> Union[Dict[str, int or float or str], int]:
-        _teamSide = self.getLoser(score)
+        [_teamSide, _scoreInt] = self.getLoser(score)
 
-        matchTime = int(matchTime)
+        if _teamSide is 'draw':
+            _teamSide = 'away' if self.calcAPPM(self.getLoserStat(dangerousAttacks, 'away'), matchTime) \
+                                  > self.calcAPPM(self.getLoserStat(dangerousAttacks, 'home'), matchTime) else 'home'
+
         dangerousAttacks = self.getLoserStat(dangerousAttacks, _teamSide)
         corners = self.getLoserStat(corners, _teamSide)
+
+        matchTime = int(matchTime)
 
         _passed = False
         _constAPPM = 0
@@ -87,10 +93,11 @@ class OddCalculator:
             _constCorners = self.constCorners2
 
         currentAPPM = self.calcAPPM(dangerousAttacks, matchTime)
-        if _constAPPM - self.constAPPMOffset <= currentAPPM and \
-                corners > _constCorners:
-
+        if _constAPPM - self.constAPPMOffset <= currentAPPM\
+                and corners > _constCorners\
+                and -2 <= _scoreInt[0] - _scoreInt[1] <= 2:
             _passed = True
+
         return {'score': score, 'appm': currentAPPM, 'corners': corners} if _passed else 0
 
     def clearMemory(self, events: Set[str]):
