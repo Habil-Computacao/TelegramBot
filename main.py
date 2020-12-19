@@ -38,7 +38,7 @@ class TipsterBot:
                     message = self.createMessage(gameDict[game])
                     self.sendMessage(message)
 
-            time.sleep(10)
+            time.sleep(60)
 
     def createMessage(self, game):
         messageStruct = []
