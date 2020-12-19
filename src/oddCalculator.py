@@ -72,7 +72,7 @@ class OddCalculator:
                         score: str) -> Union[Dict[str, int or float or str], int]:
         [_teamSide, _scoreInt] = self.getLoser(score)
 
-        if _teamSide is 'draw':
+        if _teamSide == 'draw':
             _teamSide = 'away' if self.calcAPPM(self.getLoserStat(dangerousAttacks, 'away'), matchTime) \
                                   > self.calcAPPM(self.getLoserStat(dangerousAttacks, 'home'), matchTime) else 'home'
 
