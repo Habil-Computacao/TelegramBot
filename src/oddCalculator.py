@@ -9,7 +9,7 @@ class OddCalculator:
 
         self.constAPPM1 = 1.2
         self.constAPPM2 = 1.0
-        self.constAPPMOffset = 0.2
+        self.constAPPMOffset = 0.1
 
         self.constCorners1 = 3
         self.constCorners2 = 7
