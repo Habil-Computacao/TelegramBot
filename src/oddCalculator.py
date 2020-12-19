@@ -1,4 +1,4 @@
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Set
 
 
 class OddCalculator:
@@ -23,15 +23,18 @@ class OddCalculator:
 
     def run(self, data: List[Dict[str, int or str or dict or list]]) -> List[Dict[int, dict]]:
         response = []
-
+        _dataIds = set()
+        print('\n')
         for match in data:
             _matchTime = int(match['time'])
             _matchId = match['id']
             _matchStats = match['stats']
             _verification = 0
+            _dataIds.add(_matchId)
+
             if self.matchTime1 - self.matchTimeOffset < _matchTime < self.matchTime1 + self.matchTimeOffset \
                     or self.matchTime2 - self.matchTimeOffset < _matchTime < self.matchTime2 + self.matchTimeOffset:
-                if self.matchs.get(_matchId):
+                if self.matchs.get(_matchId) is not None:
                     if self.matchs[_matchId] or _matchTime < 45:
                         continue
                 _verification = self.oddVerification(_matchStats['dangerousAttacks'], _matchTime,
@@ -42,6 +45,7 @@ class OddCalculator:
                                           'matchLink': match['matchLink']})
                     response.append({_matchId: _verification})
 
+        self.clearMemory(set(_dataIds))
         return response
 
     @staticmethod
@@ -88,3 +92,14 @@ class OddCalculator:
 
             _passed = True
         return {'score': score, 'appm': currentAPPM, 'corners': corners} if _passed else 0
+
+    def clearMemory(self, events: Set[str]):
+        matchs = set()
+        for item in self.matchs:
+            matchs.add(item)
+
+        toDelete = events.symmetric_difference(matchs)
+
+        for item in toDelete:
+            if self.matchs.get(item) is not None:
+                self.matchs.pop(item)
