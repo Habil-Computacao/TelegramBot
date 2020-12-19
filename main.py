@@ -24,14 +24,14 @@ class TipsterBot:
                           'teams': {'home': 'Millonarios', 'away': 'Once Caldas'},
                           'stats': {'goalAttempts': {'home': 0, 'away': 5}, 'dangerousAttacks': {'home': 1, 'away': 70},
                                     'corners': {'home': 1, 'away': 15}, 'ballPossession': {'home': 18, 'away': 92}},
-                          'matchLink': 'https://www.bet365.com/%23/AX/K%5ESarandi%2520v%2520Junior/', 'id': '24847098'}]
+                          'matchLink': 'https://www.bet365.com/%23/AX/K%5ESarandi%2520v%2520Junior', 'id': '24847098'}]
 
     def start(self):
         requests.get(self.botUrl + 'sendMessage?chat_id='+ self.groupId + '&text=' + self.hello)
 
         while True:
             allGames = self.betApi.run()
-            gameList = self.oddCalculator.run(self.testData)
+            gameList = self.oddCalculator.run(allGames)
 
             for gameDict in gameList:
                 for game in gameDict:
