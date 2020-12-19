@@ -7,6 +7,8 @@ from src.oddCalculator import OddCalculator
 class TipsterBot:
     def __init__(self):
         token = '1401583441:AAEPwUV3RzQMAtGBsu_0gkju09Nl04YxKkk'
+        self.hello = 'Tipster Bot iniciado!'
+        self.bye = 'Tipster Bot sendo desligado!'
         self.groupId = '-407721573'
         self.botUrl = f'https://api.telegram.org/bot{token}/'
         self.url_base = f'https://api.telegram.org/bot{token}/getUpdates'
@@ -25,6 +27,8 @@ class TipsterBot:
                           'matchLink': 'https://www.bet365.com/%23/AX/K%5ESarandi%2520v%2520Junior/', 'id': '24847098'}]
 
     def start(self):
+        requests.get(self.botUrl + 'sendMessage?chat_id='+ self.groupId + '&text=' + self.hello)
+
         while True:
             allGames = self.betApi.run()
             gameList = self.oddCalculator.run(self.testData)
@@ -34,7 +38,7 @@ class TipsterBot:
                     message = self.createMessage(gameDict[game])
                     self.sendMessage(message)
 
-            time.sleep(60)
+            time.sleep(10)
 
     def createMessage(self, game):
         messageStruct = []
@@ -54,7 +58,7 @@ class TipsterBot:
                             \n{self.hand} Posse de Bola: {possessionHome} % vs  {possessionAway}%\
                             \n{self.hand} APPM Variando Entre: {appmMin}  e  {appmMax} +\n\
                             \n{self.alert} Atenção, linha do canto aberta para: {corners} escanteios.\n\
-                            \n{self.earth} ->''')
+                            \n''')
 
         messageStruct.append(matchLink)
 
