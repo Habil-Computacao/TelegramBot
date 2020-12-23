@@ -52,7 +52,7 @@ class BetsulApi:
         return {'score': score, 'time': matchTime}
 
     def getGameName(self, matchId):
-        teams = requests.get(self.gameTimelineUrl + matchId).json()['doc']['data']['match']['teams']
+        teams = requests.get(self.gameTimelineUrl + matchId).json()['doc'][0]['data']['match']['teams']
 
         return {'teams': {'home': teams['home']['mediumname'], 'away': teams['away']['mediumname']}}
 
