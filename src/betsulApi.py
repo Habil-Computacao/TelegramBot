@@ -10,6 +10,7 @@ class BetsulApi:
         self.baseUrl = 'https://www.betsul.com/web/v2/eventos'
         self.matchLink = 'https://www.bet365.com/%23/AX/K%5E'
         self.gameUrl = 'https://lmt.fn.sportradar.com/demolmt/en/Etc:UTC/gismo/match_detailsextended/'
+        self.gameTimelineUrl = 'https://lmt.fn.sportradar.com/common/br/Etc:UTC/gismo/match_timeline/'
 
     def requestEvents(self) -> list:
         return requests.post(url=self.baseUrl, json=self.body).json()['eventos']
@@ -37,15 +38,11 @@ class BetsulApi:
         return gameData['values'][valueName]['value'] if gameData['values'].get(valueName) else {'home': 0, 'away': 0}
 
     def getGameValues(self, gameData) -> dict:
-        home = gameData['teams']['home']
-        away = gameData['teams']['away']
         corners = self.verifyGameValue(gameData, '124')
         dangerousAttacks = self.verifyGameValue(gameData, '1029')
         ballPossession = self.verifyGameValue(gameData, '110')
 
-        return {'teams': {'home': home, 'away': away},
-                'stats': {'dangerousAttacks': dangerousAttacks,
-                          'corners': corners, 'ballPossession': ballPossession}}
+        return {'stats': {'dangerousAttacks': dangerousAttacks, 'corners': corners, 'ballPossession': ballPossession}}
 
     @staticmethod
     def getEventValues(eventData) -> dict:
@@ -53,6 +50,11 @@ class BetsulApi:
         matchTime = eventData['tempoDecorridoMin']
 
         return {'score': score, 'time': matchTime}
+
+    def getGameName(self, matchId):
+        teams = requests.get(self.gameTimelineUrl + matchId).json()['doc']['data']['match']['teams']
+
+        return {'teams': {'home': teams['home']['mediumname'], 'away': teams['away']['mediumname']}}
 
     def run(self) -> list:
         _events = self.requestEvents()
@@ -62,6 +64,7 @@ class BetsulApi:
         for event, game, matchId in zip(_eventsData, _gamesData, _matchIds):
             _temp = self.getEventValues(event)
             _temp.update(self.getGameValues(game))
+            _temp.update(self.getGameName(matchId))
 
             home = _temp['teams']['home'].replace(' ', '%2520')
             away = _temp['teams']['away'].replace(' ', '%2520')
