@@ -1,1 +1,1 @@
-web: python main.py runserver process.env.PORT
+web: python main.py
