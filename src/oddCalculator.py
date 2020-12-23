@@ -46,6 +46,7 @@ class OddCalculator:
                     response.append({_matchId: _verification})
 
         self.clearMemory(set(_dataIds))
+        print(response)
         return response
 
     @staticmethod

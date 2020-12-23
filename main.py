@@ -31,6 +31,7 @@ class TipsterBot:
 
         while True:
             allGames = self.betApi.run()
+            print(allGames)
             gameList = self.oddCalculator.run(allGames)
 
             for gameDict in gameList:
@@ -39,6 +40,8 @@ class TipsterBot:
                     self.sendMessage(message)
 
             time.sleep(60)
+
+        requests.get(self.botUrl + 'sendMessage?chat_id='+ self.groupId + '&text=' + self.bye)
 
     def createMessage(self, game):
         messageStruct = []
