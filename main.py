@@ -51,8 +51,8 @@ class TipsterBot:
         scoreHome = game['score'][0]
         scoreAway = game['score'][2]
         appmMin = str(game['appm'] - 0.1)
-        appmMax = str(game['appm'] + 0.1)
-        corners = str(game['corners'] + 1)
+        appmMax = "%.2f" % game['appm'] + 0.1
+        corners = "%.2f" % game['corners'] + 1
         possessionHome = str(game['ballPossession']['home'])
         possessionAway = str(game['ballPossession']['away'])
 
